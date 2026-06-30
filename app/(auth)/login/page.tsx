@@ -13,13 +13,20 @@ export default function LoginPage() {
 
   const supabase = createClient()
 
+  const getOrigin = () => {
+    if (typeof window !== "undefined") {
+      return window.location.origin
+    }
+    return ""
+  }
+
   const handleGoogleLogin = async () => {
     setLoading(true)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: 
-          `${window.location.origin}/auth/callback`,
+          `${getOrigin()}/auth/callback`,
         scopes: "email profile https://www.googleapis.com/auth/calendar.events",
         queryParams: {
           access_type: "offline",
@@ -44,7 +51,7 @@ export default function LoginPage() {
           password,
           options: {
             emailRedirectTo: 
-              `${window.location.origin}/auth/callback` 
+              `${getOrigin()}/auth/callback` 
           }
         })
       if (error) setMessage(error.message)
