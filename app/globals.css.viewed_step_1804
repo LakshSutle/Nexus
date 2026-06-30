@@ -1,0 +1,103 @@
+import json
+import re
+import os
+
+transcript_path = r"C:\Users\U\.gemini\antigravity-ide\brain\6033b79e-7444-4620-801b-1cd96104ff5d\.system_generated\logs\transcript_full.jsonl"
+workspace_dir = r"c:\Users\U\OneDrive\Laksh-Projects\Nexus"
+
+files_to_restore = [
+    "app/globals.css",
+    "app/(app)/layout.tsx",
+    "app/layout.tsx",
+    "app/(app)/dashboard/page.tsx",
+    "app/(app)/interventions/page.tsx",
+    "app/(app)/goals/[id]/focus/page.tsx",
+    "app/(app)/goals/new/page.tsx",
+    "components/goals/syllabus-upload.tsx",
+    "app/(app)/goals/[id]/agents/page.tsx",
+    "app/(app)/goals/[id]/timeline/page.tsx"
+]
+
+# Map files to their normalized paths
+file_mappings = {f.lower().replace('\\', '/'): f for f in files_to_restore}
+
+# We will read transcript_full.jsonl. We look for any text matching view_file output.
+# When view_file outputs lines, it has a format:
+# File Path: `file:///...`
+# And then lines like:
+# 1: content
+# 2: content
+# We will track the earliest full view of each file to reconstruct its original content.
+
+file_views = {}
+
+with open(transcript_path, 'r', encoding='utf-8') as f:
+    for line in f:
+        if not line.strip():
+            continue
+        try:
+            data = json.loads(line)
+            content = data.get("content", "")
+            if not content:
+                continue
+
+            # Search for "File Path: `file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/...`"
+            # We want to extract the path and the lines
+            matches = re.finditer(r"File Path:\s*`file:///([^`]+)`", content)
+            for m in matches:
+                path = m.group(1).lower().replace('%28', '(').replace('%29', ')').replace('%5b', '[').replace('%5d', ']')
+                # find which file it corresponds to
+                matched_key = None
+                for key in file_mappings:
+                    if key in path:
+                        matched_key = file_mappings[key]
+                        break
+
+                if matched_key:
+                    # Extract the lines
+                    # Format:
+                    # 1: linecontent
+                    # 2: linecontent
+                    # We can find all matches of r"^\d+:\s*(.*)$" in the lines of content
+                    lines_extracted = []
+                    lines = content.split('\n')
+                    in_code_block = False
+                    for l in lines:
+                        # Match line number pattern
+                        lm = re.match(r"^(\d+):\s?(.*)$", l.strip())
+                        if lm:
+                            line_num = int(lm.group(1))
+                            line_content = lm.group(2)
+                            lines_extracted.append((line_num, line_content))
+
+                    if lines_extracted:
+                        if matched_key not in file_views:
+                            file_views[matched_key] = []
+                        file_views[matched_key].append(lines_extracted)
+        except Exception as e:
+            pass
+
+# Now reconstruct the files
+for file_rel, views in file_views.items():
+    # Sort views by size or check if we have a view starting at line 1 and covering the whole file
+    # Or merge views to cover all line numbers
+    merged = {}
+    for view in views:
+        for num, text in view:
+            # We want to keep the content from the earliest steps.
+            # So if we already have it, we keep the first one seen (which should be the original)
+            if num not in merged:
+                merged[num] = text
+
+    # Sort by line number
+    sorted_lines = [merged[num] for num in sorted(merged.keys())]
+    reconstructed_content = "\n".join(sorted_lines)
+
+    # Write to file
+    dest_path = os.path.join(workspace_dir, file_rel.replace('/', os.sep))
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    with open(dest_path, 'w', encoding='utf-8') as out_f:
+        out_f.write(reconstructed_content)
+    print(f"Restored: {file_rel} with {len(sorted_lines)} lines")
+
+print("Done restoring files.")

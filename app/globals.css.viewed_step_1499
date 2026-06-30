@@ -1,0 +1,16 @@
+- **Index-Mapping Alignment**: Preserved the original task indices during chronological date assignments to prevent date scrambling caused by task weight sorting.
+- **Task Loss Prevention**: Prevented tasks from being lost during buffer day shifts if no days remain before the deadline.
+  - Scheduler: [scheduler_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/scheduler_service.py)
+
+### 17. Plan Generation Completion Loader Fix
+- **Live Event Loop Completion**: Fixed a critical frontend typo where the `/generating` progress screen timed out after 45 seconds because it was looking for the string `"Plan complete"` while the backend logged `"Pipeline complete"`. Replaced with a case-insensitive check.
+  - Frontend Loader: [generating/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/generating/page.tsx)
+
+---
+
+## 📁 Technical Architecture File Map
+
+- **Global Design Tokens**: [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css)
+- **App Wrapper & Sidebar**: [layout.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/layout.tsx)
+- **Interactive Dashboard & Core HUD**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/dashboard/page.tsx)
+- **Agent Neural Mesh Component**: [agent-orchestration.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/agent-orchestration.tsx)

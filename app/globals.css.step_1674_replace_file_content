@@ -1,0 +1,1 @@
+"@import \"tailwindcss\";\n\n:root {\n  --bg-base: #080810;\n  --bg-surface: #0f0f1a;\n  --bg-elevated: #161625;\n  --bg-overlay: #1e1e30;"

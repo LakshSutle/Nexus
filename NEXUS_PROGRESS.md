@@ -1,0 +1,259 @@
+# NEXUS — Hackathon Implementation Progress Report
+
+This document records the comprehensive progress, architectural upgrades, and premium feature implementations completed during the preparation of NEXUS for the **Vibe2Ship Hackathon**.
+
+---
+
+## 🚀 Key Milestones & Features Implemented
+
+### 1. Multi-Agent Pipeline & Orchestration Architecture
+- **Full Agent Pipeline Implementation**: Filled the empty agent skeletons under `backend/agents/` with complete autonomous logic:
+  - `orchestrator.py`: Manages central event dispatching, state loading, and sequential model routing.
+  - `scheduling_agent.py`: Decomposes high-level goals into milestones and structured daily study schedules.
+  - `progress_tracking_agent.py`: Monitored actual completion ratios vs. expected daily velocities.
+  - `intervention_agent.py`: Evaluates risk metrics and flags critical failures when velocity deficits are discovered.
+  - `replanning_agent.py`: Rectified wrong signature arguments on the decomposition handler to prevent runtime crashes during manual rescue interventions.
+- **Server-Sent Events (SSE) Live Feed**: Wired the backend logger to stream active execution logs in real time to the app dashboard through `/api/health` event streams.
+
+### 2. Interactive Agent Orchestration Neural Network Panel
+- **Pulsing SVG Node Mesh**: Built an interactive visual representation of the 9-agent topology inside the dashboard. Keyframe-animated lines representing link cables pulse with flowing "data packets" whenever an action is triggered.
+- **Agent Inspector HUD**: Selecting any of the 9 agent nodes (e.g. Orchestrator, Failure Predictor, Google Calendar Agent) dynamically updates a detailing HUD panel displaying their specific system role, prompt logic, and standby configurations.
+- **Live Terminal Thought Stream**: Embedded a terminal console simulating live multi-agent execution. Triggering a goal analysis via the "Analyze" button launches a sequential animation loop, activating agent nodes and typing log entries in real-time.
+
+### 3. Voice Goal Intake (AI Auto-Fill)
+- **Web Speech API Integration**: Added a native microphone toggle to the "New Goal" intake flow.
+- **Gemini 2.0 Flash Parser**: Pushes transcribed audio texts to a custom backend route where Gemini parses the user's intent to automatically populate:
+  - Goal Title (e.g., "Study for Data Structures Exam")
+  - Deadline Calculation (e.g., "in two weeks" $\rightarrow$ computes date)
+  - Daily available study hours (e.g., "3 hours a day")
+  - Full details description
+
+### 4. Google Calendar Integration
+- **Supabase OAuth Handshake**: Built a backend service in `calendar_service.py` to retrieve active Supabase Google authentication provider tokens.
+- **Bi-Directional Task Publishing**: Created sync hooks that publish and update scheduled study blocks onto the user's personal Google Calendar, ensuring scheduled milestones translate to real calendar events.
+
+### 5. Premium UI/UX Styling & Glassmorphic Backdrop
+- **Space Midnight Backdrop**: Replaced default dark panels with a deep, curated space midnight background (`oklch(0.12 0.015 255)`) enhanced with custom indigo and emerald radial mesh gradients.
+- **Translucent Glassmorphism (`.glass-card`)**: Styled content blocks as glass surfaces with sub-pixel borders (`border-white/[0.05]`) and active blurs.
+- **Circular SVG Health Indicators**: Configured SVG drop-shadow filter layers to render glowing color halos (green/yellow/red) corresponding to real-time goal health scores.
+- **3D Hover Micro-Interactions**: Configured cards, sidebar elements, and action items to scale and shift smoothly using hardware-accelerated GPU transitions.
+
+### 6. Light Mode Accessibility & Contrast Overhaul
+- **Aesthetic Light Mode Styles**: Solved unreadable contrast issues in light mode caused by hardcoded dark-mode specific classes.
+- **Adaptive Text & Overlay Classes**: Added global overrides in `globals.css` using `html:not(.dark)` to automatically map white text, white borders, and light overlays to high-readability values (dark navy/slate) when toggled.
+- **Legible Status Indicators**: Custom-mapped indicators and Recharts tick/tooltip properties to adapt values depending on the active document theme.
+
+### 7. Google Cloud CI/CD & Docker Setup
+- **Frontend Dockerfile**: Multi-stage build leveraging Next.js `standalone` outputs for minimal deployment size.
+- **Backend Dockerfile**: Optimized `python:3.11-slim` runner for FastAPI.
+- **Orchestration & CI/CD**: Wired single-command orchestration via `docker-compose.yml` and programed `cloudbuild.yaml` for automated deployment to Google Cloud Run.
+
+### 8. One-Click Demo Seeder & Database Reset Utility
+- **Load Demo Data Button**: Seeds database tables with rich, pre-filled goal structures, milestones, tasks, and historical snapshots to immediately show off the app's charts.
+- **Cascading Workspace Reset**: Programmed a secure database purge routine triggered from the sidebar footer. Completely clears goal cascades in one click, leaving a clean canvas for judges.
+
+---
+
+## 🔥 Phase 2 — Roadmap Upgrade Features
+
+These features were implemented following the [NEXUS_UPGRADE_PLAN.md](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/NEXUS_UPGRADE_PLAN.md) to push NEXUS from impressive to undeniable.
+
+### 9. Command Palette (`Cmd/Ctrl + K`) — Global Navigation HUD
+- **Glassmorphic Overlay**: Full-screen backdrop-blur overlay activated by `Cmd+K` (Mac) / `Ctrl+K` (Windows), with smooth fade-in animation.
+- **Instant Search & Navigation**: Real-time fuzzy filtering across system commands and user goals. Keyboard-navigable with `↑`/`↓` arrow keys and `Enter` to execute.
+- **Power-User Command Set**:
+  - `New Goal` → navigates to goal creation
+  - `Toggle Theme` → switches dark/light mode
+  - `Seed Demo Data` → populates workspace with demo content
+  - `Reset Database` → cascading workspace purge
+  - `Analyze Goals` → triggers full agent pipeline
+- **Dynamic Goal Injection**: Fetches all user goals from Supabase on open and injects them as navigable search results linking directly to goal timelines.
+- **File**: [command-palette.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/command-palette.tsx)
+
+### 10. Ambient Status Orb — Workspace Health-at-a-Glance
+- **Dynamic Color States**: A glowing orb in the sidebar that reflects aggregate workspace health via CSS custom properties and keyframe animations:
+  - 🟢 **Pulsing Green** — All goals healthy (risk < 35%)
+  - 🟡 **Breathing Amber** — Warning state (at least one goal 35–65% risk)
+  - 🔴 **Rapid Red Pulse** — Critical alert (any goal > 65% risk)
+  - 🔵 **Spinning Blue** — Agent pipeline actively running
+- **Interactive HUD Tooltip**: Clicking the orb reveals a mini overlay panel summarizing active risk counts and overall workspace status.
+- **Real-Time Calculation**: Computes risk scores from actual goal data (days remaining vs. completion percentage) using a weighted velocity-deficit formula.
+- **File**: [status-orb.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/status-orb.tsx)
+
+### 11. "Will I Make It?" Burn Rate Forecast Engine
+- **Dual-Axis Forecast Chart**: Overhauled the dashboard health chart from a simple area graph into a comparative forecast visualization:
+  - **Target Trajectory** (dashed line): Linear progress slope from 0% → 100% at deadline
+  - **Actual Trajectory** (solid line): Step-wise task completion plotted over real dates
+  - **Projected Forecast** (dotted extension): Extrapolates actual velocity forward to show the real projected finish date
+- **Velocity Metrics Header**: Displays required velocity vs. actual velocity (tasks/day), with a clear "projected to finish X days before/after deadline" indicator.
+- **Color-Coded Risk Zones**: Green (ahead of schedule), amber (within 3-day margin), red (projected to miss deadline).
+- **File**: [health-chart.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/health-chart.tsx)
+
+### 12. Resource Curation Agent — 9th Autonomous Agent
+- **Automatic Resource Injection**: When viewing a goal timeline, the Resource Curation Agent analyzes each milestone's topic and dynamically generates a curated learning resource recommendation.
+- **Rich Resource Cards**: Each card displays:
+  - Resource title and source type icon (📺 YouTube / 📖 Documentation / 📝 Article)
+  - Direct URL link to the resource
+  - Estimated consumption time (e.g., "~15 min watch")
+- **Topic-Aware Matching**: Uses keyword analysis on milestone titles to select contextually appropriate resources (e.g., "Binary Trees" → algorithm visualization tutorial).
+- **File**: [timeline/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+
+### 13. View Transitions & Confetti Micro-Interactions
+- **Circular Radial Theme Transition**: Toggling dark/light mode triggers a `document.startViewTransition()` call with a `clip-path: circle()` animation that radiates outward from the toggle button's click position — creating a cinematic sunrise/sunset wipe effect.
+  - CSS keyframe: `clip-reveal` in [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css)
+  - Toggle logic: [theme-toggle.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/theme-toggle.tsx)
+- **Confetti Burst on Task Completion**: Completing a task on the timeline triggers a `canvas-confetti` particle explosion from the checkbox position, using gold/emerald/sky color palette with randomized spread and decay.
+  - Integration: [timeline/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+
+### 14. Google OAuth Token Sync & Persistence
+- **Persistent OAuth Token Storage**: Saves `google_access_token` and `google_refresh_token` inside the Supabase `user_settings` table upon initial login. Subsequent calendar sync requests load these tokens from the database, eliminating the need to prompt the user for Google sign-in on every sync.
+- **Auto-Refresh Handshake**: Added `refresh_google_token(user_id)` helper on the backend to automatically refresh expired access tokens using the refresh token, and gracefully prompts the user to re-link Google if tokens are completely expired or missing.
+  - Services: [calendar_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/calendar_service.py) / routes: [goals.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/api/routes/goals.py)
+
+### 15. Supabase Milestone & Task Linking
+- **Dynamic Milestone Creation**: Populates the database `milestones` table with dynamic milestones from the Goal Ingestion Agent instead of leaving the milestones table empty.
+- **Milestone Index-to-UUID Mapping**: Built an index-to-UUID mapper in the Task Decomposition Agent. Maps the 0-indexed integer `milestone_index` returned by Gemini to the newly created Supabase milestone UUID (`milestone_id`) when writing tasks to the database, ensuring correct relational alignment.
+  - Agent: [task_decomposition_agent.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/agents/task_decomposition_agent.py)
+
+### 16. Scheduling & Bin-Packing Engine Optimization
+- **Bin-Packing Stall Fix**: Modified the scheduling algorithm to force-allocate tasks that exceed the daily hour commit limit, preventing infinite loops or empty plans.
+- **Index-Mapping Alignment**: Preserved the original task indices during chronological date assignments to prevent date scrambling caused by task weight sorting.
+- **Task Loss Prevention**: Prevented tasks from being lost during buffer day shifts if no days remain before the deadline.
+  - Scheduler: [scheduler_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/scheduler_service.py)
+
+### 17. Plan Generation Completion Loader Fix
+- **Live Event Loop Completion**: Fixed a critical frontend typo where the `/generating` progress screen timed out after 45 seconds because it was looking for the string `"Plan complete"` while the backend logged `"Pipeline complete"`. Replaced with a case-insensitive check.
+  - Frontend Loader: [generating/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/generating/page.tsx)
+
+### 18. Timeline Health Animation & Memory Leak Fix
+- **Synchronous Cleanup Hook**: Fixed a memory leak in the dynamic health score circle animation where the interval timer was not cleared on page navigations due to being instantiated inside an async `useEffect` wrapper function.
+  - Timeline Page: [timeline/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+
+---
+
+## 📁 Technical Architecture File Map
+
+- **Global Design Tokens**: [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css)
+- **App Wrapper & Sidebar**: [layout.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/layout.tsx)
+- **Interactive Dashboard & Core HUD**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/dashboard/page.tsx)
+- **Agent Neural Mesh Component**: [agent-orchestration.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/agent-orchestration.tsx)
+- **Burn Rate Forecast Chart**: [health-chart.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/health-chart.tsx)
+- **Command Palette HUD**: [command-palette.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/command-palette.tsx)
+- **Ambient Status Orb**: [status-orb.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/status-orb.tsx)
+- **Theme Toggle (View Transitions)**: [theme-toggle.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/theme-toggle.tsx)
+- **Timeline & Resource Curation**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+- **Google Calendar Services**: [calendar_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/calendar_service.py)
+- **Voice Parser Service**: [gemini_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/gemini_service.py)
+- **Deployment Pipelines**: [cloudbuild.yaml](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/cloudbuild.yaml) / [docker-compose.yml](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/docker-compose.yml)
+
+---
+
+## 🧪 Validation & Compilation Correctness
+
+- **Turbopack Build Verified**: Compiled all 18 static/dynamic routes successfully with zero errors:
+  ```bash
+  pnpm run build
+  # ✓ Compiled successfully in 15.6s
+  # ✓ 18 routes generated (15 dynamic, 3 static)
+  ```
+- **Local Dev Server**: Actively running and synchronized with Supabase database integrations:
+  ```bash
+  pnpm run dev
+  ```
+
+## 📊 Feature Summary
+
+| # | Feature | Category | Status |
+|---|---------|----------|--------|
+| 1 | Multi-Agent Pipeline & Orchestration | Backend / AI | ✅ Complete |
+| 2 | Agent Neural Network Panel | Dashboard UI | ✅ Complete |
+| 3 | Voice Goal Intake (Gemini) | AI / UX | ✅ Complete |
+| 4 | Google Calendar Integration | Services | ✅ Complete |
+| 5 | Glassmorphic UI & Space Backdrop | Design System | ✅ Complete |
+| 6 | Light Mode Contrast Overhaul | Accessibility | ✅ Complete |
+| 7 | Cloud Run CI/CD & Docker | DevOps | ✅ Complete |
+| 8 | Demo Seeder & DB Reset | Tooling | ✅ Complete |
+| 9 | Command Palette (`Cmd+K`) | Power-User UX | ✅ Complete |
+| 10 | Ambient Status Orb | Dashboard UI | ✅ Complete |
+| 11 | Burn Rate Forecast Engine | Analytics / AI | ✅ Complete |
+| 12 | Resource Curation Agent (9th) | AI Agent | ✅ Complete |
+| 13 | View Transitions & Confetti | Micro-Interactions | ✅ Complete |
+| 14 | Google OAuth Token Sync & Persistence | Integration / DB | ✅ Complete |
+| 15 | Supabase Milestone & Task Linking | Relational DB | ✅ Complete |
+| 16 | Scheduling & Bin-Packing Optimization | Algorithm / AI | ✅ Complete |
+| 17 | Plan Generation Screen Mismatch Fix | Frontend / UX | ✅ Complete |
+
+| 14 | Google OAuth Token Sync & Persistence | Integration / DB | ✅ Complete |
+| 15 | Supabase Milestone & Task Linking | Relational DB | ✅ Complete |
+| 16 | Scheduling & Bin-Packing Optimization | Algorithm / AI | ✅ Complete |
+| 17 | Plan Generation Screen Mismatch Fix | Frontend / UX | ✅ Complete |
+| 18 | Timeline Health Animation & Memory Leak Fix | Frontend / UX | ✅ Complete |
+
+### Phase 3 — Hackathon Demo Optimization & Fragile Dependency Removal
+
+Following the final audit for the live demo, we executed a series of optimizations to prioritize visual features and eliminate fragile external dependencies:
+
+#### 19. Dashboard Layout Optimization (Live SSE Terminal Placement)
+- **Top-Level Visibility**: Moved the `<AgentOrchestration>` component containing the live SSE neural net visualizer and token thought terminal stream from the bottom of the page to the absolute top of the main dashboard column. Now, it is the first visual element judges see.
+- **Files**: [dashboard/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/(app)/dashboard/page.tsx)
+
+#### 20. Outreach Channel Consolidation (WhatsApp Priority)
+- **Dependency Reduction**: Cut active live-demo outreach channels down to WhatsApp only (via twilio sandbox).
+- **Settings & Dashboard UI Updates**: Completely removed Telegram, Pushover, and Email outreach setup cards from the Settings view, and updated the reminder channel state component to only show WhatsApp and Google Calendar.
+- **Files**: [settings/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/(app)/settings/page.tsx) / [reminder-channels.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/reminder-channels.tsx)
+
+#### 21. Google Calendar Sync Kill-Switch
+- **Fail-Safe Mechanism**: Added a `google_calendar_enabled` boolean switch to the `user_settings` table (defaulting to `false`) to bypass potential expired OAuth credential failures during live judge walkthroughs.
+- **Sync Bypass Logic**: Integrated bypass logic in the settings endpoints, the frontend API service, and backend goal/intervention sync controllers to bypass calendar updates if the kill-switch is toggled off.
+- **Files**: [20260702_google_calendar_toggle.sql](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/20260702_google_calendar_toggle.sql) / [settings.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/api/routes/settings.py) / [goals.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/api/routes/goals.py) / [interventions.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/api/routes/interventions.py)
+
+---
+
+## 📁 Technical Architecture File Map
+
+- **Global Design Tokens**: [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css)
+- **App Wrapper & Sidebar**: [layout.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/layout.tsx)
+- **Interactive Dashboard & Core HUD**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/dashboard/page.tsx)
+- **Agent Neural Mesh Component**: [agent-orchestration.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/agent-orchestration.tsx)
+- **Burn Rate Forecast Chart**: [health-chart.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/health-chart.tsx)
+- **Command Palette HUD**: [command-palette.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/command-palette.tsx)
+- **Ambient Status Orb**: [status-orb.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/status-orb.tsx)
+- **Theme Toggle (View Transitions)**: [theme-toggle.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/theme-toggle.tsx)
+- **Timeline & Resource Curation**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+- **Google Calendar Services**: [calendar_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/calendar_service.py)
+- **Voice Parser Service**: [gemini_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/gemini_service.py)
+- **Deployment Pipelines**: [cloudbuild.yaml](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/cloudbuild.yaml) / [docker-compose.yml](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/docker-compose.yml)
+
+---
+
+## 🧪 Validation & Compilation Correctness
+
+- **Turbopack Build Verified**: Compiled all routes successfully with zero errors.
+- **Local Dev Server**: Running in the background (`Next.js` and `FastAPI` on `pnpm dev:all`).
+
+## 📊 Feature Summary
+
+| # | Feature | Category | Status |
+|---|---------|----------|--------|
+| 1 | Multi-Agent Pipeline & Orchestration | Backend / AI | ✅ Complete |
+| 2 | Agent Neural Network Panel | Dashboard UI | ✅ Complete |
+| 3 | Voice Goal Intake (Gemini) | AI / UX | ✅ Complete |
+| 4 | Google Calendar Integration | Services | ✅ Complete |
+| 5 | Glassmorphic UI & Space Backdrop | Design System | ✅ Complete |
+| 6 | Light Mode Contrast Overhaul | Accessibility | ✅ Complete |
+| 7 | Cloud Run CI/CD & Docker | DevOps | ✅ Complete |
+| 8 | Demo Seeder & DB Reset | Tooling | ✅ Complete |
+| 9 | Command Palette (`Cmd+K`) | Power-User UX | ✅ Complete |
+| 10 | Ambient Status Orb | Dashboard UI | ✅ Complete |
+| 11 | Burn Rate Forecast Engine | Analytics / AI | ✅ Complete |
+| 12 | Resource Curation Agent (9th) | AI Agent | ✅ Complete |
+| 13 | View Transitions & Confetti | Micro-Interactions | ✅ Complete |
+| 14 | Google OAuth Token Sync & Persistence | Integration / DB | ✅ Complete |
+| 15 | Supabase Milestone & Task Linking | Relational DB | ✅ Complete |
+| 16 | Scheduling & Bin-Packing Optimization | Algorithm / AI | ✅ Complete |
+| 17 | Plan Generation Screen Mismatch Fix | Frontend / UX | ✅ Complete |
+| 18 | Timeline Health Animation & Memory Leak Fix | Frontend / UX | ✅ Complete |
+| 19 | live SSE Neural Mesh Layout Lift | Dashboard UI | ✅ Complete |
+| 20 | Outreach Channel Consolidation | Settings / UI | ✅ Complete |
+| 21 | Google Calendar Sync Kill-Switch | Integrations | ✅ Complete |
+

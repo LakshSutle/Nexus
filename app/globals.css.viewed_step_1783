@@ -1,0 +1,20 @@
+# Rollback to Original NEXUS UI
+
+As requested, we have successfully reverted all visual overhaul changes across the entire codebase to restore the original NEXUS interface.
+
+## Reverted Components
+The following files were parsed, verified, reconstructed from logs, and rolled back to their original state:
+
+1. **Global CSS:** Reverted [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css) and layout font links in [layout.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/layout.tsx).
+2. **Navigation:** Reverted desktop sidebar styles and bottom mobile layout structures in [layout.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/layout.tsx).
+3. **Dashboard:** Restored the original layout, execution health parameters, and goal panels in [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/dashboard/page.tsx).
+4. **Interventions:** Restored original design, metrics, risk factor list, action buttons, and history in [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/interventions/page.tsx).
+5. **Goal Creation Form:** Restored original form design and the [syllabus-upload.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/goals/syllabus-upload.tsx) dropzone.
+6. **Focus study view:** Restored original card structure, checkmarks, done buttons, and progress counters in [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/focus/page.tsx).
+7. **Agent Feed:** Restored original timeline activity components and agent details in [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/agents/page.tsx).
+8. **Timeline page:** Restored original layout, sidebar, progress counters, and curated study resource widgets in [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx).
+
+## Build Verification
+- Ran Next.js build.
+- Checked and resolved syntax mismatch errors from duplicate closing tags.
+- The build now compiles successfully with **zero compilation or TypeScript errors**.

@@ -1,0 +1,60 @@
+
+### 13. View Transitions & Confetti Micro-Interactions
+- **Circular Radial Theme Transition**: Toggling dark/light mode triggers a `document.startViewTransition()` call with a `clip-path: circle()` animation that radiates outward from the toggle button's click position — creating a cinematic sunrise/sunset wipe effect.
+  - CSS keyframe: `clip-reveal` in [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css)
+  - Toggle logic: [theme-toggle.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/theme-toggle.tsx)
+- **Confetti Burst on Task Completion**: Completing a task on the timeline triggers a `canvas-confetti` particle explosion from the checkbox position, using gold/emerald/sky color palette with randomized spread and decay.
+  - Integration: [timeline/page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+
+---
+
+## 📁 Technical Architecture File Map
+
+- **Global Design Tokens**: [globals.css](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/globals.css)
+- **App Wrapper & Sidebar**: [layout.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/layout.tsx)
+- **Interactive Dashboard & Core HUD**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/dashboard/page.tsx)
+- **Agent Neural Mesh Component**: [agent-orchestration.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/agent-orchestration.tsx)
+- **Burn Rate Forecast Chart**: [health-chart.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/dashboard/health-chart.tsx)
+- **Command Palette HUD**: [command-palette.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/command-palette.tsx)
+- **Ambient Status Orb**: [status-orb.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/status-orb.tsx)
+- **Theme Toggle (View Transitions)**: [theme-toggle.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/components/ui/theme-toggle.tsx)
+- **Timeline & Resource Curation**: [page.tsx](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/app/%28app%29/goals/%5Bid%5D/timeline/page.tsx)
+- **Google Calendar Services**: [calendar_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/calendar_service.py)
+- **Voice Parser Service**: [gemini_service.py](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/backend/services/gemini_service.py)
+- **Deployment Pipelines**: [cloudbuild.yaml](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/cloudbuild.yaml) / [docker-compose.yml](file:///c:/Users/U/OneDrive/Laksh-Projects/Nexus/docker-compose.yml)
+
+---
+
+## 🧪 Validation & Compilation Correctness
+
+- **Turbopack Build Verified**: Compiled all 18 static/dynamic routes successfully with zero errors:
+  ```bash
+  pnpm run build
+  # ✓ Compiled successfully in 15.6s
+  # ✓ 18 routes generated (15 dynamic, 3 static)
+  ```
+- **Local Dev Server**: Actively running and synchronized with Supabase database integrations:
+  ```bash
+  pnpm run dev
+  ```
+
+---
+
+## 📊 Feature Summary
+
+| # | Feature | Category | Status |
+|---|---------|----------|--------|
+| 1 | Multi-Agent Pipeline & Orchestration | Backend / AI | ✅ Complete |
+| 2 | Agent Neural Network Panel | Dashboard UI | ✅ Complete |
+| 3 | Voice Goal Intake (Gemini) | AI / UX | ✅ Complete |
+| 4 | Google Calendar Integration | Services | ✅ Complete |
+| 5 | Glassmorphic UI & Space Backdrop | Design System | ✅ Complete |
+| 6 | Light Mode Contrast Overhaul | Accessibility | ✅ Complete |
+| 7 | Cloud Run CI/CD & Docker | DevOps | ✅ Complete |
+| 8 | Demo Seeder & DB Reset | Tooling | ✅ Complete |
+| 9 | Command Palette (`Cmd+K`) | Power-User UX | ✅ Complete |
+| 10 | Ambient Status Orb | Dashboard UI | ✅ Complete |
+| 11 | Burn Rate Forecast Engine | Analytics / AI | ✅ Complete |
+| 12 | Resource Curation Agent (9th) | AI Agent | ✅ Complete |
+| 13 | View Transitions & Confetti | Micro-Interactions | ✅ Complete |
+

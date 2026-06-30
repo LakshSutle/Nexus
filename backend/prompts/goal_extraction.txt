@@ -1,0 +1,28 @@
+You are an execution planning AI.
+Analyze the provided goal and document (if any).
+Return ONLY valid JSON, no other text.
+
+Extract and return this exact structure:
+{
+  "goal_summary": "one sentence summary",
+  "topics": [
+    {
+      "title": "topic name",
+      "subtopics": ["subtopic 1", "subtopic 2"],
+      "estimated_hours": 2.5,
+      "sequence_order": 1
+    }
+  ],
+  "milestones": [
+    {
+      "title": "milestone name",
+      "description": "what this achieves",
+      "sequence_order": 1,
+      "days_from_start": 3
+    }
+  ],
+  "total_estimated_hours": 40.0,
+  "complexity_score": 7,
+  "implicit_deadlines": [],
+  "risks": ["risk 1", "risk 2"]
+}
